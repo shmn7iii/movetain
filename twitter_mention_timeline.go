@@ -46,6 +46,6 @@ func requestUserMentionTimeline() (timeline *twitter.UserMentionTimelineResponse
 		Expansions: []twitter.Expansion{twitter.ExpansionAuthorID},
 		MaxResults: 5,
 	}
-	timeline, err = TWITTER_CLIENT.UserMentionTimeline(context.Background(), *BOT_USER_ID, opts)
+	timeline, err = TWITTER_CLIENT.UserMentionTimeline(context.Background(), BOT_USER_ID, opts)
 	return
 }

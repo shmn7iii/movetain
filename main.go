@@ -2,8 +2,8 @@ package main
 
 import (
 	"context"
-	"flag"
-	"fmt"
+	"encoding/json"
+	"io/ioutil"
 	"log"
 	"net/http"
 
@@ -14,30 +14,46 @@ import (
 )
 
 var (
-	BEARER_TOKEN   = flag.String("token", "", "Twitter API token")
-	BOT_USER_ID    = flag.String("user_id", "", "BOT's user id")
-	FeePayerBase58 = flag.String("feepayer", "", "FeePayer no base58."+
-		" *keypair no base 58, private key no base 58 dato error deru")
+	ACCESS_TOKEN   string
+	BOT_USER_ID    string
+	FEEPAYER       types.Account
 	TWITTER_CLIENT *twitter.Client
 	SOLANA_CLIENT  *client.Client
-	FEEPAYER       types.Account
 )
 
-type authorize struct {
-	Token string
+type jsonKeys struct {
+	ClientId       string `json:"clientId"`
+	ClientIdSecret string `json:"clientIdSecret"`
+	BotUserId      string `json:"botUserId"`
+	FeePayerBase58 string `json:"feePayerBase58"`
 }
 
-func (a authorize) Add(req *http.Request) {
-	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", a.Token))
+func loadVars() {
+	// Json読み込み
+	raw, err := ioutil.ReadFile("secrets/keys.json")
+	if err != nil {
+		log.Fatalf("[Twitter] can't read secrets/keys.json: %v", err)
+		return
+	}
+	var jsonKeys jsonKeys
+	json.Unmarshal(raw, &jsonKeys)
+
+	// 変数定義
+	BOT_USER_ID = jsonKeys.BotUserId
+	FEEPAYER, err = types.AccountFromBase58(jsonKeys.FeePayerBase58)
+	if err != nil {
+		log.Fatalf("[Solana]  can't load FeePayer: %v", err)
+	}
+	ACCESS_TOKEN, err = requestAccessToken(jsonKeys)
+	if err != nil {
+		log.Fatalf("[Twitter] can't get ACCESS_TOKEN: %v", err)
+	}
 }
 
-func init() {
-	flag.Parse()
-	FEEPAYER, _ = types.AccountFromBase58(*FeePayerBase58)
-
+func createClients() {
 	// twitter
 	TWITTER_CLIENT = &twitter.Client{
-		Authorizer: authorize{Token: *BEARER_TOKEN},
+		Authorizer: authorize{Token: ACCESS_TOKEN},
 		Client:     http.DefaultClient,
 		Host:       "https://api.twitter.com",
 	}
@@ -49,6 +65,13 @@ func init() {
 		log.Fatalf("[Solana]  Failed to version info, err: %v", err)
 	}
 	log.Println("[Solana]  Solana client has launched. version", resp.SolanaCore)
+}
+
+func init() {
+	// 各種読み込み
+	loadVars()
+	// 各種クライアント作成
+	createClients()
 }
 
 func main() {
