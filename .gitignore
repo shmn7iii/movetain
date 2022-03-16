@@ -9,4 +9,5 @@
 .DS_Store
 .env
 bin/*
-secrets/*
+secrets/refreshtoken
+secrets/keys.json
