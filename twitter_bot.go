@@ -1,99 +1,73 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
-	"io/ioutil"
 	"log"
-	"net/http"
-	"net/url"
-	"os"
-	"strings"
+	"strconv"
 )
 
-type authorize struct {
-	Token string
-}
-
-func (a authorize) Add(req *http.Request) {
-	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", a.Token))
-}
-
-type responseJson struct {
-	TokenType    string `json:"token_type"`
-	ExpiresIn    string `json:"expires_in"`
-	AccessToken  string `json:"access_token"`
-	Scope        string `json:"scope"`
-	RefreshToken string `json:"refresh_token"`
-}
-
-func requestAccessToken(jsonKeys jsonKeys) (access_token string, err error) {
-	// secrets/refreshtokenから読み込み
-	bytes, err := ioutil.ReadFile("secrets/refreshtoken")
+func botMain(latest_replied_id string) (updated_latest_replied_id string) {
+	// メンションタイムラインを取得
+	mention_timeline_data, err := getMentionTimelineData()
 	if err != nil {
-		log.Fatalf("[Twitter] can't read secrets/refreshtoken: %v", err)
-		return
-	}
-	// 今回使うリフレッシュトークンを設定
-	refresh_token := string(bytes)
-
-	// 新しくアクセストークンを取得
-
-	// data-urlencode
-	values := url.Values{}
-	values.Add("refresh_token", refresh_token)
-	values.Add("grant_type", "refresh_token")
-
-	// リクエストを作成
-	req, err := http.NewRequest(
-		"POST",
-		"https://api.twitter.com/2/oauth2/token",
-		strings.NewReader(values.Encode()),
-	)
-	if err != nil {
-		log.Println("[Twitter] ERROR: can't create new http request:", err)
 		return
 	}
 
-	// ヘッダーを設定
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	// ツイートディクショナリーを取得
+	dictionary := mention_timeline_data.TweetDictionaries
 
-	// Basic認証
-	req.SetBasicAuth(jsonKeys.ClientId, jsonKeys.ClientIdSecret)
+	for tweet_id := range dictionary {
+		// 起動前のツイート・返信済みのツイートは無視
+		tweet_id_i, _ := strconv.Atoi(tweet_id)
+		latest_replied_id_i, _ := strconv.Atoi(latest_replied_id)
+		if tweet_id_i <= latest_replied_id_i {
+			continue
+		}
 
-	// クライアント作成・実行
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		log.Println("[Twitter] ERROR: can't do http request:", err)
-		return
+		// ツイートのデータを取得
+		tweet_data, err := getTweetData(tweet_id)
+		if err != nil {
+			continue
+		}
+
+		// 親からの呼び出しの場合は無視
+		tweet_conversation_id := tweet_data.ConversationID
+		if tweet_id == tweet_conversation_id {
+			continue
+		}
+
+		// NFTの発行
+		// 親ツイートのデータを取得
+		parent_tweet_data, err := getTweetData(tweet_conversation_id)
+		if err != nil {
+			continue
+		}
+
+		// 内容をつなげる
+		memo_content := "[Movetain MEMO]" +
+			"\n " + parent_tweet_data.AuthorName + " @" + parent_tweet_data.AuthorUserName +
+			"\n " + parent_tweet_data.TweetText +
+			"\n  - " + parent_tweet_data.CreatedAt
+
+		// メモ書く
+		txhash, err := writeMemo(memo_content)
+		if err != nil {
+			continue
+		}
+
+		// 返信
+		reply_content := "🎉 Success!" +
+			"\nI created a Memo Transaction on Solana (devnet)." +
+			"\nYou can see your memo on Solana Explorer:" +
+			"\n https://explorer.solana.com/tx/" + txhash + "?cluster=devnet"
+
+		reply_id, err := reply2Tweet(tweet_id, reply_content)
+		if err != nil {
+			continue
+		}
+
+		log.Println("[Twitter] BOT replied:", reply_id)
 	}
 
-	// レスポンスBodyを読み込み
-	byteArray, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Println("[Twitter] ERROR: can't read http response body:", err)
-		return
-	}
-
-	defer resp.Body.Close()
-
-	// 構造体に落とし込む
-	jsonBytes := ([]byte)(byteArray)
-	var responseJson responseJson
-	json.Unmarshal(jsonBytes, &responseJson)
-
-	// 新しいリフレッシュトークンを保存
-	f, err := os.Create("secrets/refreshtoken")
-	data := []byte(responseJson.RefreshToken)
-	_, err = f.Write(data)
-	if err != nil {
-		log.Println("[Twitter] ERROR: can't write secrets/refreshtoken:", err)
-		log.Println("[Twitter] RefreshToken:", refresh_token)
-		return
-	}
-
-	// 取得したアクセストークン
-	access_token = responseJson.AccessToken
-	return
+	// 現在のNewest IDを返す
+	return mention_timeline_data.NewestID
 }
