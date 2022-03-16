@@ -7,31 +7,43 @@ import (
 	"github.com/g8rswimmer/go-twitter/v2"
 )
 
-func requestCreateTweet(req twitter.CreateTweetRequest) *twitter.CreateTweetResponse {
-	tweetResponse, err := TWITTER_CLIENT.CreateTweet(context.Background(), req)
-	if err != nil {
-		log.Panicf("create tweet error: %v", err)
-	}
-	return tweetResponse
-}
-
 // リプ
-func reply2Tweet(tweet_id string, content string) string {
+func reply2Tweet(reply_to_tweet_id string, content string) (tweet_id string, err error) {
 	req := twitter.CreateTweetRequest{
 		Text: content,
 		Reply: &twitter.CreateTweetReply{
-			InReplyToTweetID: tweet_id,
+			InReplyToTweetID: reply_to_tweet_id,
 		},
 	}
-	tweetResponse := requestCreateTweet(req)
-	return tweetResponse.Tweet.ID
+	tweetResponse, err := requestCreateTweet(req)
+	if err != nil {
+		log.Println("[Twitter] ERROR: can't create reply tweet:", err)
+		return
+	}
+
+	tweet_id = tweetResponse.Tweet.ID
+	return
 }
 
 // 普通のツイート
-func tweet(content string) string {
+func tweet(content string) (tweet_id string, err error) {
 	req := twitter.CreateTweetRequest{
 		Text: content,
 	}
-	tweetResponse := requestCreateTweet(req)
-	return tweetResponse.Tweet.ID
+	tweetResponse, err := requestCreateTweet(req)
+	if err != nil {
+		log.Println("[Twitter] ERROR: can't create tweet:", err)
+		return
+	}
+
+	tweet_id = tweetResponse.Tweet.ID
+	return
+}
+
+// 以下直接は呼び出さない想定
+
+// APIへリクエストを送信
+func requestCreateTweet(req twitter.CreateTweetRequest) (tweetResponse *twitter.CreateTweetResponse, err error) {
+	tweetResponse, err = TWITTER_CLIENT.CreateTweet(context.Background(), req)
+	return
 }

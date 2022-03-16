@@ -8,9 +8,45 @@ import (
 	"github.com/g8rswimmer/go-twitter/v2"
 )
 
-// API問合せ
-// 直接は呼び出さない想定
-func requestTweetLookup(tweet_id string) map[string]*twitter.TweetDictionary {
+// 必要なものだけ入れた構造体
+type TweetData struct {
+	ID             string
+	ConversationID string
+	AuthorName     string
+	AuthorUserName string
+	TweetText      string
+	Image          string
+	CreatedAt      string
+}
+
+// データを取得
+func getTweetData(tweet_id string) (tweet_data TweetData, err error) {
+	log.Println("[Twitter] Getting TweetLookup...")
+
+	tweetResponse, err := requestTweetLookup(tweet_id)
+	if err != nil {
+		log.Println("[Twitter] ERROR: can't get tweet data:", err)
+		return
+	}
+
+	dictionaries := tweetResponse.Raw.TweetDictionaries()
+	tweet_data = TweetData{
+		ID:             tweet_id,
+		ConversationID: dictionaries[tweet_id].Tweet.ConversationID,
+		AuthorName:     dictionaries[tweet_id].Author.Name,
+		AuthorUserName: dictionaries[tweet_id].Author.UserName,
+		TweetText:      dictionaries[tweet_id].Tweet.Text,
+		CreatedAt:      dictionaries[tweet_id].Tweet.CreatedAt,
+		// 今回は画像の実装は見送り
+		// Image:       dictionaries[tweet_id].AttachmentMedia,
+	}
+	return
+}
+
+// 以下直接は呼び出さない想定
+
+// APIへリクエストを送信
+func requestTweetLookup(tweet_id string) (tweetResponse *twitter.TweetLookupResponse, err error) {
 	opts := twitter.TweetLookupOpts{
 		Expansions: []twitter.Expansion{
 			twitter.ExpansionEntitiesMentionsUserName,
@@ -22,40 +58,6 @@ func requestTweetLookup(tweet_id string) map[string]*twitter.TweetDictionary {
 			twitter.TweetFieldAttachments,
 		},
 	}
-
-	tweetResponse, err := TWITTER_CLIENT.TweetLookup(context.Background(), strings.Split(tweet_id, ","), opts)
-	if err != nil {
-		log.Panicf("tweet lookup error: %v", err)
-	}
-
-	dictionaries := tweetResponse.Raw.TweetDictionaries()
-	return dictionaries
-}
-
-type TweetData struct {
-	ID             string
-	ConversationID string
-	AuthorName     string
-	AuthorUserName string
-	TweetText      string
-	Image          string
-	CreatedAt      string
-}
-
-func getTweetData(tweet_id string) TweetData {
-	log.Println("[Twitter] Getting TweetLookup...")
-
-	dictionaries := requestTweetLookup(tweet_id)
-
-	tweet_data := TweetData{
-		ID:             tweet_id,
-		ConversationID: dictionaries[tweet_id].Tweet.ConversationID,
-		AuthorName:     dictionaries[tweet_id].Author.Name,
-		AuthorUserName: dictionaries[tweet_id].Author.UserName,
-		TweetText:      dictionaries[tweet_id].Tweet.Text,
-		CreatedAt:      dictionaries[tweet_id].Tweet.CreatedAt,
-		// 今回は画像の実装は見送り
-		// Image:       dictionaries[tweet_id].AttachmentMedia,
-	}
-	return tweet_data
+	tweetResponse, err = TWITTER_CLIENT.TweetLookup(context.Background(), strings.Split(tweet_id, ","), opts)
+	return
 }

@@ -53,7 +53,11 @@ func init() {
 
 func main() {
 	// 起動時点のNewestID(=latest_replied_id)を取得
-	latest_replied_id := getMentionTimelineData().NewestID
+	mention_timeline_data, err := getMentionTimelineData()
+	if err != nil {
+		log.Fatalf("[Twitter] ERROR: can't get mention timeline on launch.")
+	}
+
 	// タイマー起動
-	timer(latest_replied_id)
+	timer(mention_timeline_data.NewestID)
 }

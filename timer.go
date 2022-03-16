@@ -22,9 +22,13 @@ func timer(latest_replied_id string) {
 }
 
 // 毎回やる処理
-func timer_do(latest_replied_id string) string {
+func timer_do(latest_replied_id string) (updated_latest_replied_id string) {
 	// メンションタイムラインを取得
-	mention_timeline_data := getMentionTimelineData()
+	mention_timeline_data, err := getMentionTimelineData()
+	if err != nil {
+		return
+	}
+
 	// ツイートディクショナリーを取得
 	dictionary := mention_timeline_data.TweetDictionaries
 
@@ -37,7 +41,10 @@ func timer_do(latest_replied_id string) string {
 		}
 
 		// ツイートのデータを取得
-		tweet_data := getTweetData(tweet_id)
+		tweet_data, err := getTweetData(tweet_id)
+		if err != nil {
+			continue
+		}
 
 		// 親からの呼び出しの場合は無視 // TODO: 暇だったら返信とかしてもいい
 		tweet_conversation_id := tweet_data.ConversationID
@@ -47,7 +54,10 @@ func timer_do(latest_replied_id string) string {
 
 		// NFTの発行
 		// 親ツイートのデータを取得
-		parent_tweet_data := getTweetData(tweet_conversation_id)
+		parent_tweet_data, err := getTweetData(tweet_conversation_id)
+		if err != nil {
+			continue
+		}
 
 		// 内容をつなげる
 		memo_content := "[Movetain MEMO]" +
@@ -56,7 +66,11 @@ func timer_do(latest_replied_id string) string {
 			"\n  - " + parent_tweet_data.CreatedAt
 
 		// メモ書く
-		txhash := writeMemo(memo_content)
+		// TODO: ここでメモ書き込む内容がサイズ上限を満たしているかを確認
+		txhash, err := writeMemo(memo_content)
+		if err != nil {
+			continue
+		}
 
 		// 返信
 		reply_content := "🎉 Success!" +
@@ -64,7 +78,10 @@ func timer_do(latest_replied_id string) string {
 			"\nYou can see your memo on Solana Explorer:" +
 			"\n https://explorer.solana.com/tx/" + txhash + "?cluster=devnet"
 
-		reply_id := reply2Tweet(tweet_id, reply_content)
+		reply_id, err := reply2Tweet(tweet_id, reply_content)
+		if err != nil {
+			continue
+		}
 
 		log.Println("[Twitter] BOT replied:", reply_id)
 	}
