@@ -35,7 +35,9 @@ func requestTweetLookup(tweet_id string) map[string]*twitter.TweetDictionary {
 type TweetData struct {
 	ID             string
 	ConversationID string
-	Text           string
+	AuthorName     string
+	AuthorUserName string
+	TweetText      string
 	Image          string
 	CreatedAt      string
 }
@@ -48,7 +50,9 @@ func getTweetData(tweet_id string) TweetData {
 	tweet_data := TweetData{
 		ID:             tweet_id,
 		ConversationID: dictionaries[tweet_id].Tweet.ConversationID,
-		Text:           dictionaries[tweet_id].Tweet.Text,
+		AuthorName:     dictionaries[tweet_id].Author.Name,
+		AuthorUserName: dictionaries[tweet_id].Author.UserName,
+		TweetText:      dictionaries[tweet_id].Tweet.Text,
 		CreatedAt:      dictionaries[tweet_id].Tweet.CreatedAt,
 		// 今回は画像の実装は見送り
 		// Image:       dictionaries[tweet_id].AttachmentMedia,
