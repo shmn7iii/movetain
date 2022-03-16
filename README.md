@@ -17,13 +17,13 @@ Movetain ([@movetain](https://twitter.com/movetain)) is a Twitter BOT which mint
 
 ### 0. Set up Twitter API and Create Twitter App.
 
-    BOT requests "OAuth 2.0 User Context" authentication.   
-    We use [*OAuth 2.0 Authorization Code Flow with PKCE*](https://developer.twitter.com/en/docs/authentication/oauth-2-0/authorization-code)'s RefreshToken, so you need to get it in advance.
+  BOT requests "OAuth 2.0 User Context" authentication.   
+  We use [*OAuth 2.0 Authorization Code Flow with PKCE*](https://developer.twitter.com/en/docs/authentication/oauth-2-0/authorization-code)'s RefreshToken, so you need to get it in advance.
 
 ### 1. Clone this repository.
-    ```bash
-    $ git clone https://github.com/shmn7iii/movetain.git
-    ```
+  ```bash
+  $ git clone https://github.com/shmn7iii/movetain.git
+  ```
 
 ### 2. Set secrets.  
   - [secrets/keys.json](/secrets)
@@ -42,7 +42,7 @@ Movetain ([@movetain](https://twitter.com/movetain)) is a Twitter BOT which mint
       ```
 
 ### 3. Build and Run!
-    ```bash
-    $ go build -o ./bin/main 
-    $ ./bin/main
-    ```
+  ```bash
+  $ go build -o ./bin/main 
+  $ ./bin/main
+  ```
