@@ -25,20 +25,20 @@ func reply2Tweet(reply_to_tweet_id string, content string) (tweet_id string, err
 	return
 }
 
-// 普通のツイート
-func tweet(content string) (tweet_id string, err error) {
-	req := twitter.CreateTweetRequest{
-		Text: content,
-	}
-	tweetResponse, err := requestCreateTweet(req)
-	if err != nil {
-		log.Println("[Twitter] ERROR: can't create tweet:", err)
-		return
-	}
+// 普通のツイート（たぶん使わん）
+// func tweet(content string) (tweet_id string, err error) {
+// 	req := twitter.CreateTweetRequest{
+// 		Text: content,
+// 	}
+// 	tweetResponse, err := requestCreateTweet(req)
+// 	if err != nil {
+// 		log.Println("[Twitter] ERROR: can't create tweet:", err)
+// 		return
+// 	}
 
-	tweet_id = tweetResponse.Tweet.ID
-	return
-}
+// 	tweet_id = tweetResponse.Tweet.ID
+// 	return
+// }
 
 // 以下直接は呼び出さない想定
 
