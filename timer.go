@@ -49,9 +49,24 @@ func timer_do(latest_replied_id string) string {
 		// 親ツイートのデータを取得
 		parent_tweet_data := getTweetData(tweet_conversation_id)
 
-		log.Println("child text:  ", tweet_data.Text)
-		log.Println("parent text: ", parent_tweet_data.Text)
+		// 内容をつなげる
+		memo_content := "[Movetain MEMO]" +
+			"\n " + parent_tweet_data.AuthorName + " @" + parent_tweet_data.AuthorUserName +
+			"\n " + parent_tweet_data.TweetText +
+			"\n  - " + parent_tweet_data.CreatedAt
 
+		// メモ書く
+		txhash := writeMemo(memo_content)
+
+		// 返信
+		reply_content := "🎉 Success!" +
+			"\nI created a Memo Transaction on Solana (devnet)." +
+			"\nYou can see your memo on Solana Explorer:" +
+			"\n https://explorer.solana.com/tx/" + txhash + "?cluster=devnet"
+
+		reply_id := reply2Tweet(tweet_id, reply_content)
+
+		log.Println("[Twitter] BOT replied:", reply_id)
 	}
 
 	// 現在のNewest IDを返す
