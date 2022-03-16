@@ -9,24 +9,24 @@
 > [WATANA-be](https://github.com/WATANA-be)
 > ) 
 
-## about
+# About
 Movetain ([@movetain](https://twitter.com/movetain)) is a Twitter BOT which mints a
 **"Tweet NFT"** on Solana devnet.
 
-## set up
+# Set up
 
-0. Set up Twitter API and Create Twitter App.
+### 0. Set up Twitter API and Create Twitter App.
 
     BOT requests "OAuth 2.0 User Context" authentication.   
     We use [*OAuth 2.0 Authorization Code Flow with PKCE*](https://developer.twitter.com/en/docs/authentication/oauth-2-0/authorization-code)'s RefreshToken, so you need to get it in advance.
 
-1. Clone this repository.
+### 1. Clone this repository.
     ```bash
     $ git clone https://github.com/shmn7iii/movetain.git
     ```
 
-2. Set secrets.  
-  - [secrets/keys.json](/secrets/keys.json)
+### 2. Set secrets.  
+  - [secrets/keys.json](/secrets)
       ```json
       {
         "clientId": "<Client ID>",
@@ -36,12 +36,12 @@ Movetain ([@movetain](https://twitter.com/movetain)) is a Twitter BOT which mint
       }
       ```
 
-  - [secrets/refreshtoken](/secrets/refreshtoken)
+  - [secrets/refreshtoken](/secrets)
       ```text
       <Refresh Token>
       ```
 
-3. Build and Run!
+### 3. Build and Run!
     ```bash
     $ go build -o ./bin/main 
     $ ./bin/main
