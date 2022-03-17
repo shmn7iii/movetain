@@ -38,6 +38,7 @@ func mintNFT(content string, imageURL string) (nftAddress string, err error) {
 	return
 }
 
+// JSONのStringReaderを生成
 func generateJsonStringReader(content string, imageURL string) (jsonStringReader *strings.Reader) {
 	jsonStringReader = strings.NewReader(
 		"{" +

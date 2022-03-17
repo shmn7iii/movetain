@@ -2,8 +2,6 @@ package main
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
 	"log"
 	"strings"
 
@@ -32,15 +30,6 @@ func getTweetData(tweet_id string) (tweet_data TweetData, err error) {
 	}
 
 	dictionaries := tweetResponse.Raw.TweetDictionaries()
-
-	// debug
-	enc, err := json.MarshalIndent(dictionaries, "", "    ")
-	if err != nil {
-		log.Panic(err)
-	}
-	fmt.Println(string(enc))
-	//
-
 	tweet_data = TweetData{
 		ID:             tweet_id,
 		ConversationID: dictionaries[tweet_id].Tweet.ConversationID,
