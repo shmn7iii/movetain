@@ -1,0 +1,8 @@
+version: "3"
+services:
+  movetain:
+    build: .
+    volumes:
+      - type: bind
+        source: "./secrets"
+        target: "/movetain/secrets"
