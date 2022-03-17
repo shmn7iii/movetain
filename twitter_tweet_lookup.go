@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"log"
 	"strings"
 
@@ -30,14 +32,26 @@ func getTweetData(tweet_id string) (tweet_data TweetData, err error) {
 	}
 
 	dictionaries := tweetResponse.Raw.TweetDictionaries()
+
+	// debug
+	enc, err := json.MarshalIndent(dictionaries, "", "    ")
+	if err != nil {
+		log.Panic(err)
+	}
+	fmt.Println(string(enc))
+	//
+
 	tweet_data = TweetData{
 		ID:             tweet_id,
 		ConversationID: dictionaries[tweet_id].Tweet.ConversationID,
 		AuthorName:     dictionaries[tweet_id].Author.Name,
 		AuthorUserName: dictionaries[tweet_id].Author.UserName,
 		TweetText:      dictionaries[tweet_id].Tweet.Text,
-		ImageURL:       dictionaries[tweet_id].Tweet.Entities.URLs[0].URL,
 		CreatedAt:      dictionaries[tweet_id].Tweet.CreatedAt,
+	}
+
+	if len(dictionaries[tweet_id].AttachmentMedia) != 0 {
+		tweet_data.ImageURL = dictionaries[tweet_id].AttachmentMedia[0].URL
 	}
 	return
 }
@@ -49,12 +63,16 @@ func requestTweetLookup(tweet_id string) (tweetResponse *twitter.TweetLookupResp
 	opts := twitter.TweetLookupOpts{
 		Expansions: []twitter.Expansion{
 			twitter.ExpansionEntitiesMentionsUserName,
+			twitter.ExpansionAttachmentsMediaKeys,
 			twitter.ExpansionAuthorID,
 		},
 		TweetFields: []twitter.TweetField{
 			twitter.TweetFieldCreatedAt,
 			twitter.TweetFieldConversationID,
 			twitter.TweetFieldAttachments,
+		},
+		MediaFields: []twitter.MediaField{
+			twitter.MediaFieldURL,
 		},
 	}
 	tweetResponse, err = TWITTER_CLIENT.TweetLookup(context.Background(), strings.Split(tweet_id, ","), opts)
