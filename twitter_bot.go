@@ -42,8 +42,8 @@ func botMain(latest_replied_id string) (updated_latest_replied_id string) {
 		}
 
 		// 内容をつなげる
-		NFT_content := "[Movetain NFT] " + parent_tweet_data.AuthorName + " @" + parent_tweet_data.AuthorUserName +
-			"「" + parent_tweet_data.TweetText + "」 - " + parent_tweet_data.CreatedAt
+		NFT_content := "[Movetain NFT] " + parent_tweet_data.AuthorName + "(@" + parent_tweet_data.AuthorUserName +
+			")「" + parent_tweet_data.TweetText + "」 - " + parent_tweet_data.CreatedAt
 
 		NFT_media_URL := parent_tweet_data.ImageURL
 
