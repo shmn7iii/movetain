@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	"github.com/g8rswimmer/go-twitter/v2"
+	shell "github.com/ipfs/go-ipfs-api"
 	"github.com/portto/solana-go-sdk/client"
 	"github.com/portto/solana-go-sdk/rpc"
 	"github.com/portto/solana-go-sdk/types"
@@ -17,9 +18,11 @@ import (
 var (
 	ACCESS_TOKEN   string
 	BOT_USER_ID    string
+	HOST_IP        string
 	FEEPAYER       types.Account
 	TWITTER_CLIENT *twitter.Client
 	SOLANA_CLIENT  *client.Client
+	IPFS_SHELL     *shell.Shell
 )
 
 type jsonKeys struct {
@@ -27,6 +30,7 @@ type jsonKeys struct {
 	ClientIdSecret string `json:"clientIdSecret"`
 	BotUserId      string `json:"botUserId"`
 	FeePayerBase58 string `json:"feePayerBase58"`
+	HostIP         string `json:"hostIp"`
 }
 
 func loadEnv() {
@@ -41,6 +45,7 @@ func loadEnv() {
 
 	// 変数定義
 	BOT_USER_ID = jsonKeys.BotUserId
+	HOST_IP = jsonKeys.HostIP
 	FEEPAYER, err = types.AccountFromBase58(jsonKeys.FeePayerBase58)
 	if err != nil {
 		log.Fatalf("[Solana]  can't load FeePayer: %v", err)
@@ -66,6 +71,9 @@ func createClients() {
 		log.Fatalf("[Solana]  Failed to version info, err: %v", err)
 	}
 	log.Println("[Solana]  Solana client has launched. version", resp.SolanaCore)
+
+	// IPFS
+	IPFS_SHELL = shell.NewShell("ipfs:5001")
 }
 
 func init() {
