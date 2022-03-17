@@ -13,6 +13,7 @@ import (
 	"github.com/portto/solana-go-sdk/types"
 )
 
+// グローバル変数
 var (
 	ACCESS_TOKEN   string
 	BOT_USER_ID    string
@@ -28,7 +29,7 @@ type jsonKeys struct {
 	FeePayerBase58 string `json:"feePayerBase58"`
 }
 
-func loadVars() {
+func loadEnv() {
 	// Json読み込み
 	raw, err := ioutil.ReadFile("secrets/keys.json")
 	if err != nil {
@@ -69,7 +70,7 @@ func createClients() {
 
 func init() {
 	// 各種読み込み
-	loadVars()
+	loadEnv()
 	// 各種クライアント作成
 	createClients()
 }
