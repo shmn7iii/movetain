@@ -36,7 +36,7 @@ func getTweetData(tweet_id string) (tweet_data TweetData, err error) {
 		AuthorName:     dictionaries[tweet_id].Author.Name,
 		AuthorUserName: dictionaries[tweet_id].Author.UserName,
 		TweetText:      dictionaries[tweet_id].Tweet.Text,
-		ImageURL:       dictionaries[tweet_id].AttachmentMedia[0].URL,
+		ImageURL:       dictionaries[tweet_id].Tweet.Entities.URLs[0].URL,
 		CreatedAt:      dictionaries[tweet_id].Tweet.CreatedAt,
 	}
 	return
