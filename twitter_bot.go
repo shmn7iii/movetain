@@ -47,6 +47,11 @@ func botMain(latest_replied_id string) (updated_latest_replied_id string) {
 			continue
 		}
 
+		// 君らは親子かな？
+		if tweet_data.AuthorUserName != parent_tweet_data.AuthorUserName {
+			continue
+		}
+
 		// 内容をつなげる
 		NFT_content := "[Movetain NFT] " + parent_tweet_data.AuthorName + "(@" + parent_tweet_data.AuthorUserName +
 			")「" + parent_tweet_data.TweetText + "」 - " + parent_tweet_data.CreatedAt
