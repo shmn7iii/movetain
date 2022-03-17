@@ -18,13 +18,14 @@ Movetain ([@movetain](https://twitter.com/movetain)) is a Twitter BOT which mint
 ### 0. Set up Twitter API and Create Twitter App.
 
   BOT requests "OAuth 2.0 User Context" authentication.   
-  We use [*OAuth 2.0 Authorization Code Flow with PKCE*](https://developer.twitter.com/en/docs/authentication/oauth-2-0/authorization-code)'s RefreshToken, so you need to get it in advance.
+  We use [*OAuth 2.0 Authorization Code Flow with PKCE*](https://developer.twitter.com/en/docs/authentication/oauth-2-0/authorization-code) 's RefreshToken, so you need to get it in advance.
 
 ### 1. Set up Ubuntu.
 
   > Env: Azure Virtual Machine, Ubuntu 20.04.4
 
   ```bash
+  # dependency
   $ sudo apt-get update
   $ sudo apt-get upgrade -y
   $ sudo apt-get install -y git vim curl
@@ -38,7 +39,7 @@ Movetain ([@movetain](https://twitter.com/movetain)) is a Twitter BOT which mint
   $ sudo chmod +x /usr/local/bin/docker-compose
   $ sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
 
-  # clone this repo
+  # clone
   $ git clone https://github.com/shmn7iii/movetain.git
   ```
 
