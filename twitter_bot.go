@@ -42,10 +42,12 @@ func botMain(latest_replied_id string) (updated_latest_replied_id string) {
 		}
 
 		// 内容をつなげる
-		memo_content := "[Movetain NFT]" +
+		NFT_content := "[Movetain NFT]" +
 			"\n " + parent_tweet_data.AuthorName + " @" + parent_tweet_data.AuthorUserName +
 			"\n " + parent_tweet_data.TweetText +
 			"\n  - " + parent_tweet_data.CreatedAt
+
+		NFT_media_URL := parent_tweet_data.ImageURL
 
 		// メモ書く
 		// txhash, err := writeMemo(memo_content)
@@ -54,7 +56,7 @@ func botMain(latest_replied_id string) (updated_latest_replied_id string) {
 		// }
 
 		// NFT発行
-		nftAddress, err := mintNFT(memo_content, "Null")
+		nftAddress, err := mintNFT(NFT_content, NFT_media_URL)
 		if err != nil {
 			continue
 		}
