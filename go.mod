@@ -15,6 +15,7 @@ require (
 	github.com/garyburd/go-oauth v0.0.0-20180319155456-bca2e7f09a17 // indirect
 	github.com/joho/godotenv v1.4.0 // indirect
 	github.com/mr-tron/base58 v1.2.0 // indirect
+	github.com/near/borsh-go v0.3.1-0.20210831082424-4377deff6791 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/portto/solana-go-sdk v1.16.1 // indirect
 	github.com/stretchr/testify v1.7.0 // indirect
