@@ -13,7 +13,7 @@ import (
 // メモをトランザクションに埋め込み
 func writeMemo(content string) (txhash string, err error) {
 	// fetch recent block hash
-	recentBlockhashResponse, err := fetchRecentBlockhash()
+	recentBlockhashResponse, err := requestFetchRecentBlockhash()
 	if err != nil {
 		log.Println("[Solana]  ERROR: can't fetch blockhash:", err)
 		return
@@ -21,14 +21,14 @@ func writeMemo(content string) (txhash string, err error) {
 	blockhash := recentBlockhashResponse.Blockhash
 
 	// create transaction
-	tx, err := createMemoTX(content, blockhash)
+	tx, err := requestCreateMemoTX(content, blockhash)
 	if err != nil {
 		log.Println("[Solana]  ERROR: can't create transaction:", err)
 		return
 	}
 
 	// send transaction
-	txhash, err = sendTx(tx)
+	txhash, err = requestSendTx(tx)
 	if err != nil {
 		log.Println("[Solana]  ERROR: can't send transaction:", err)
 		return
@@ -43,13 +43,13 @@ func writeMemo(content string) (txhash string, err error) {
 // 以下直接は呼び出さない想定
 
 // fetch recent block hash
-func fetchRecentBlockhash() (recentBlockhashResponse rpc.GetRecentBlockHashResultValue, err error) {
+func requestFetchRecentBlockhash() (recentBlockhashResponse rpc.GetRecentBlockHashResultValue, err error) {
 	recentBlockhashResponse, err = SOLANA_CLIENT.GetRecentBlockhash(context.Background())
 	return
 }
 
 // create transaction
-func createMemoTX(content string, blockhash string) (tx types.Transaction, err error) {
+func requestCreateMemoTX(content string, blockhash string) (tx types.Transaction, err error) {
 	tx, err = types.NewTransaction(types.NewTransactionParam{
 		Signers: []types.Account{FEEPAYER, FEEPAYER},
 		Message: types.NewMessage(types.NewMessageParam{
@@ -67,7 +67,7 @@ func createMemoTX(content string, blockhash string) (tx types.Transaction, err e
 }
 
 // send transaction
-func sendTx(tx types.Transaction) (txhash string, err error) {
+func requestSendTx(tx types.Transaction) (txhash string, err error) {
 	txhash, err = SOLANA_CLIENT.SendTransaction(context.Background(), tx)
 	return
 }
