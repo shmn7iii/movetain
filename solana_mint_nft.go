@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"log"
+	"strings"
 
 	"github.com/portto/solana-go-sdk/common"
 	"github.com/portto/solana-go-sdk/pkg/pointer"
@@ -13,15 +14,20 @@ import (
 	"github.com/portto/solana-go-sdk/types"
 )
 
-func mintNFT(contents string, imageURL string) (nftAddress string, sig string, err error) {
-
+func mintNFT(content string, imageURL string) (nftAddress string, err error) {
 	// contentからjsonを作る
-
-	// jsonをどこにあげる？
+	jsonStringReader := generateJsonStringReader(content, imageURL)
+	// jsonをIPFSにあげる
+	jsonCID, err := uploadJson2ipfs(jsonStringReader)
+	if err != nil {
+		log.Println("[Solana] can't upload json to IPFS:", err)
+		return
+	}
 
 	// mint
-	nftAddress, sig, err = requestMintToken(contents)
+	nftAddress, sig, err := requestMintToken(jsonCID)
 	if err != nil {
+		log.Println("[Solana] can't mint NFT:", err)
 		return
 	}
 
@@ -29,6 +35,18 @@ func mintNFT(contents string, imageURL string) (nftAddress string, sig string, e
 	log.Println("[Solana ]      Account:  ", nftAddress)
 	log.Println("[Solana ]      Signature:", sig)
 
+	return
+}
+
+func generateJsonStringReader(content string, imageURL string) (jsonStringReader *strings.Reader) {
+	jsonStringReader = strings.NewReader(
+		"{" +
+			"\n  \"name\": \"Movetain Tweet Token\"," +
+			"\n  \"description\": \"" + content + "\"," +
+			"\n  \"image\": \"" + imageURL + "\"," +
+			"\n  \"external_url\": \"http://www.github.com/shmn7iii/movetain\"" +
+			"\n}" +
+			"")
 	return
 }
 
@@ -98,7 +116,7 @@ func requestMintToken(jsonCID string) (nftAddress string, sig string, err error)
 					MintData: tokenmeta.Data{
 						Name:                 "Movetain Tweet Token",
 						Symbol:               "MTT",
-						Uri:                  "https://gateway.ipfs.io/ipfs/" + jsonCID,
+						Uri:                  "http://" + HOST_IP + "/ipfs/" + jsonCID,
 						SellerFeeBasisPoints: 100,
 						Creators: &[]tokenmeta.Creator{
 							{
