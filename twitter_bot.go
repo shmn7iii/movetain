@@ -68,7 +68,7 @@ func botMain(latest_replied_id string) (updated_latest_replied_id string) {
 		reply_content := "🎉 Success!" +
 			"\nI created a NFT on Solana (devnet)." +
 			"\nYou can see your NFT on Solana Explorer:" +
-			"\n https://explorer.solana.com/" + nftAddress + "?cluster=devnet"
+			"\n https://explorer.solana.com/address/" + nftAddress + "?cluster=devnet"
 
 		reply_id, err := reply2Tweet(tweet_id, reply_content)
 		if err != nil {
