@@ -12,6 +12,12 @@ func botMain(latest_replied_id string) (updated_latest_replied_id string) {
 		return
 	}
 
+	// 更新なし
+	if mention_timeline_data.NewestID <= latest_replied_id {
+		updated_latest_replied_id = latest_replied_id
+		return
+	}
+
 	// ツイートディクショナリーを取得
 	dictionary := mention_timeline_data.TweetDictionaries
 
