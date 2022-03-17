@@ -20,13 +20,41 @@ Movetain ([@movetain](https://twitter.com/movetain)) is a Twitter BOT which mint
   BOT requests "OAuth 2.0 User Context" authentication.   
   We use [*OAuth 2.0 Authorization Code Flow with PKCE*](https://developer.twitter.com/en/docs/authentication/oauth-2-0/authorization-code)'s RefreshToken, so you need to get it in advance.
 
-### 1. Clone this repository.
+### 1. Set up Ubuntu.
+
+  > Env: Azure Virtual Machine, Ubuntu 20.04.4
+
   ```bash
+  $ sudo apt-get update
+  $ sudo apt-get upgrade -y
+  $ sudo apt-get install -y git vim curl
+
+  # docker
+  $ curl -fsSL https://get.docker.com/ | sh
+  $ sudo systemctl start docker
+
+  # docker-compose
+  $ sudo curl -L "https://github.com/docker/compose/releases/download/1.26.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+  $ sudo chmod +x /usr/local/bin/docker-compose
+  $ sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+
+  # clone this repo
   $ git clone https://github.com/shmn7iii/movetain.git
   ```
 
-### 2. Set secrets.  
-  - [secrets/keys.json](/secrets)
+### 2. Set secrets.
+
+  ```bash
+  $ pwd
+  <PROJECT_DIRECTORY>
+
+  $ sftp -i ~/.ssh/xxx.pem user@ip
+  sftp> cd movetain
+  sftp> puts -f ./secrets
+  sftp> exit
+  ```
+
+  - **secrets/keys.json**
       ```json
       {
         "clientId": "<Client ID>",
@@ -36,13 +64,18 @@ Movetain ([@movetain](https://twitter.com/movetain)) is a Twitter BOT which mint
       }
       ```
 
-  - [secrets/refreshtoken](/secrets)
+  - **secrets/refreshtoken**
       ```text
       <Refresh Token>
       ```
 
 ### 3. Build and Run!
+
   ```bash
-  $ go build -o ./bin/main 
-  $ ./bin/main
+  $ cd movetain
+  $ sudo docker-compose build
+  $ sudo docker-compose up -d
+
+  # follow log
+  $ sudo docker-compose logs -f movetain
   ```
