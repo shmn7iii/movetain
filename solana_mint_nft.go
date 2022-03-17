@@ -44,7 +44,7 @@ func generateJsonStringReader(content string, imageURL string) (jsonStringReader
 			"\n  \"name\": \"Movetain Tweet Token\"," +
 			"\n  \"description\": \"" + content + "\"," +
 			"\n  \"image\": \"" + imageURL + "\"," +
-			"\n  \"external_url\": \"http://www.github.com/shmn7iii/movetain\"" +
+			"\n  \"external_url\": \"https://www.shmn7iii.net/movetain\"" +
 			"\n}" +
 			"")
 	return
