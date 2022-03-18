@@ -16,9 +16,7 @@ import (
 
 // グローバル変数
 var (
-	ACCESS_TOKEN   string
-	BOT_USER_ID    string
-	HOST_IP        string
+	JSON_KEYS      jsonKeys
 	FEEPAYER       types.Account
 	TWITTER_CLIENT *twitter.Client
 	SOLANA_CLIENT  *client.Client
@@ -33,54 +31,56 @@ type jsonKeys struct {
 	HostIP         string `json:"hostIp"`
 }
 
-func loadEnv() {
+func loadEnv() (jsonKeys jsonKeys, accessToken string, feePayer types.Account) {
 	// Json読み込み
 	raw, err := ioutil.ReadFile("secrets/keys.json")
 	if err != nil {
 		log.Fatalf("[Twitter] can't read secrets/keys.json: %v", err)
 		return
 	}
-	var jsonKeys jsonKeys
 	json.Unmarshal(raw, &jsonKeys)
 
-	// 変数定義
-	BOT_USER_ID = jsonKeys.BotUserId
-	HOST_IP = jsonKeys.HostIP
-	FEEPAYER, err = types.AccountFromBase58(jsonKeys.FeePayerBase58)
+	feePayer, err = types.AccountFromBase58(jsonKeys.FeePayerBase58)
 	if err != nil {
 		log.Fatalf("[Solana]  can't load FeePayer: %v", err)
 	}
-	ACCESS_TOKEN, err = requestAccessToken(jsonKeys)
+
+	accessToken, err = requestAccessToken(jsonKeys)
 	if err != nil {
 		log.Fatalf("[Twitter] can't get ACCESS_TOKEN: %v", err)
 	}
+
+	return
 }
 
-func createClients() {
+func createClients(twitterAccessToken string) (twitterClient *twitter.Client, solanaClient *client.Client, ipfsShell *shell.Shell) {
 	// twitter
-	TWITTER_CLIENT = &twitter.Client{
-		Authorizer: authorize{Token: ACCESS_TOKEN},
+	twitterClient = &twitter.Client{
+		Authorizer: authorize{Token: twitterAccessToken},
 		Client:     http.DefaultClient,
 		Host:       "https://api.twitter.com",
 	}
 
 	// solana
-	SOLANA_CLIENT = client.NewClient(rpc.DevnetRPCEndpoint)
-	resp, err := SOLANA_CLIENT.GetVersion(context.TODO())
+	solanaClient = client.NewClient(rpc.DevnetRPCEndpoint)
+	resp, err := solanaClient.GetVersion(context.TODO())
 	if err != nil {
 		log.Fatalf("[Solana]  Failed to version info, err: %v", err)
 	}
 	log.Println("[Solana]  Solana client has launched. version", resp.SolanaCore)
 
 	// IPFS
-	IPFS_SHELL = shell.NewShell("ipfs:5001")
+	ipfsShell = shell.NewShell("ipfs:5001")
+
+	return
 }
 
 func init() {
 	// 各種読み込み
-	loadEnv()
+	var twitterAccessToken string
+	JSON_KEYS, twitterAccessToken, FEEPAYER = loadEnv()
 	// 各種クライアント作成
-	createClients()
+	TWITTER_CLIENT, SOLANA_CLIENT, IPFS_SHELL = createClients(twitterAccessToken)
 }
 
 func main() {
