@@ -58,12 +58,6 @@ func botMain(latest_replied_id string) (updated_latest_replied_id string) {
 
 		NFT_media_URL := parent_tweet_data.ImageURL
 
-		// メモ書く
-		// txhash, err := writeMemo(memo_content)
-		// if err != nil {
-		// 	continue
-		// }
-
 		// NFT発行
 		nftAddress, err := mintNFT(NFT_content, NFT_media_URL)
 		if err != nil {
@@ -71,11 +65,6 @@ func botMain(latest_replied_id string) (updated_latest_replied_id string) {
 		}
 
 		// 返信
-		// reply_content := "🎉 Success!" +
-		// 	"\nI created a Memo Transaction on Solana (devnet)." +
-		// 	"\nYou can see your memo on Solana Explorer:" +
-		// 	"\n https://explorer.solana.com/tx/" + txhash + "?cluster=devnet"
-
 		reply_content := "🎉 Success!" +
 			"\nI created a NFT on Solana (devnet)." +
 			"\nYou can see your NFT on Solana Explorer:" +
@@ -89,6 +78,7 @@ func botMain(latest_replied_id string) (updated_latest_replied_id string) {
 		log.Println("[Twitter] BOT replied:", reply_id)
 	}
 
-	// 現在のNewest IDを返す
-	return mention_timeline_data.NewestID
+	// Newest IDを更新し返却
+	updated_latest_replied_id = mention_timeline_data.NewestID
+	return
 }

@@ -31,9 +31,9 @@ func mintNFT(content string, imageURL string) (nftAddress string, err error) {
 		return
 	}
 
-	log.Println("[Solana ] 🪪 BOT has minted a NFT")
-	log.Println("[Solana ]      Account:  ", nftAddress)
-	log.Println("[Solana ]      Signature:", sig)
+	log.Println("[Solana]  BOT has minted a NFT")
+	log.Println("[Solana]   Account:  ", nftAddress)
+	log.Println("[Solana]   Signature:", sig)
 
 	return
 }
