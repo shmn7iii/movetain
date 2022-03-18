@@ -9,6 +9,8 @@ import (
 	"net/url"
 	"os"
 	"strings"
+
+	"github.com/g8rswimmer/go-twitter/v2"
 )
 
 type authorize struct {
@@ -27,7 +29,25 @@ type responseJson struct {
 	RefreshToken string `json:"refresh_token"`
 }
 
-func requestAccessToken(jsonKeys jsonKeys) (access_token string, err error) {
+func regenerateTwitterClient(jsonKeys jsonKeys) (newClient *twitter.Client) {
+	log.Println("[Twitter] Regenerating Twitter client.")
+
+	// アクセストークンを再生成
+	newToken, err := requestAccessToken(jsonKeys)
+	if err != nil {
+		log.Fatalf("[Twitter] can't get ACCESS_TOKEN: %v", err)
+	}
+
+	// クライアント再生成
+	newClient = &twitter.Client{
+		Authorizer: authorize{Token: newToken},
+		Client:     http.DefaultClient,
+		Host:       "https://api.twitter.com",
+	}
+	return
+}
+
+func requestAccessToken(jsonKeys jsonKeys) (accessToken string, err error) {
 	// secrets/refreshtokenから読み込み
 	bytes, err := ioutil.ReadFile("secrets/refreshtoken")
 	if err != nil {
