@@ -117,7 +117,7 @@ func requestMintToken(jsonCID string) (nftAddress string, sig string, err error)
 					MintData: tokenmeta.Data{
 						Name:                 "Movetain Tweet Token",
 						Symbol:               "MTT",
-						Uri:                  "http://" + HOST_IP + ":8080/ipfs/" + jsonCID,
+						Uri:                  "http://" + JSON_KEYS.HostIP + ":8080/ipfs/" + jsonCID,
 						SellerFeeBasisPoints: 100,
 						Creators: &[]tokenmeta.Creator{
 							{

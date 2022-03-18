@@ -114,6 +114,7 @@ func requestAccessToken(jsonKeys jsonKeys) (accessToken string, err error) {
 	}
 
 	// 取得したアクセストークン
-	access_token = responseJson.AccessToken
+	accessToken = responseJson.AccessToken
+
 	return
 }
