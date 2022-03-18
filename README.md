@@ -80,5 +80,5 @@ $ docker-compose build
 $ docker-compose up -d
 
 # follow log
-$ docker-compose logs -f movetain
+$ docker-compose logs -f
 ```
