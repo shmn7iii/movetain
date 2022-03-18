@@ -15,7 +15,7 @@ type TweetData struct {
 	AuthorName     string
 	AuthorUserName string
 	TweetText      string
-	Image          string
+	ImageURL       string
 	CreatedAt      string
 }
 
@@ -37,8 +37,10 @@ func getTweetData(tweet_id string) (tweet_data TweetData, err error) {
 		AuthorUserName: dictionaries[tweet_id].Author.UserName,
 		TweetText:      dictionaries[tweet_id].Tweet.Text,
 		CreatedAt:      dictionaries[tweet_id].Tweet.CreatedAt,
-		// 今回は画像の実装は見送り
-		// Image:       dictionaries[tweet_id].AttachmentMedia,
+	}
+
+	if len(dictionaries[tweet_id].AttachmentMedia) != 0 {
+		tweet_data.ImageURL = dictionaries[tweet_id].AttachmentMedia[0].URL
 	}
 	return
 }
@@ -50,12 +52,16 @@ func requestTweetLookup(tweet_id string) (tweetResponse *twitter.TweetLookupResp
 	opts := twitter.TweetLookupOpts{
 		Expansions: []twitter.Expansion{
 			twitter.ExpansionEntitiesMentionsUserName,
+			twitter.ExpansionAttachmentsMediaKeys,
 			twitter.ExpansionAuthorID,
 		},
 		TweetFields: []twitter.TweetField{
 			twitter.TweetFieldCreatedAt,
 			twitter.TweetFieldConversationID,
 			twitter.TweetFieldAttachments,
+		},
+		MediaFields: []twitter.MediaField{
+			twitter.MediaFieldURL,
 		},
 	}
 	tweetResponse, err = TWITTER_CLIENT.TweetLookup(context.Background(), strings.Split(tweet_id, ","), opts)

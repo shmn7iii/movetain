@@ -3,6 +3,14 @@ services:
   movetain:
     build: .
     volumes:
-      - type: bind
-        source: "./secrets"
-        target: "/movetain/secrets"
+      - ./secrets:/movetain/secrets
+    depends_on:
+      - ipfs
+  ipfs:
+    image: ipfs/go-ipfs:latest
+    ports:
+      - "4001:4001"
+      - "5001:5001"
+      - "8080:8080"
+    expose:
+      - 8080

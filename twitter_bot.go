@@ -12,6 +12,12 @@ func botMain(latest_replied_id string) (updated_latest_replied_id string) {
 		return
 	}
 
+	// 更新なし
+	if mention_timeline_data.NewestID <= latest_replied_id {
+		updated_latest_replied_id = latest_replied_id
+		return
+	}
+
 	// ツイートディクショナリーを取得
 	dictionary := mention_timeline_data.TweetDictionaries
 
@@ -35,30 +41,34 @@ func botMain(latest_replied_id string) (updated_latest_replied_id string) {
 			continue
 		}
 
-		// NFTの発行
 		// 親ツイートのデータを取得
 		parent_tweet_data, err := getTweetData(tweet_conversation_id)
 		if err != nil {
 			continue
 		}
 
-		// 内容をつなげる
-		memo_content := "[Movetain MEMO]" +
-			"\n " + parent_tweet_data.AuthorName + " @" + parent_tweet_data.AuthorUserName +
-			"\n " + parent_tweet_data.TweetText +
-			"\n  - " + parent_tweet_data.CreatedAt
+		// 君らは親子かな？
+		if tweet_data.AuthorUserName != parent_tweet_data.AuthorUserName {
+			continue
+		}
 
-		// メモ書く
-		txhash, err := writeMemo(memo_content)
+		// 内容をつなげる
+		NFT_content := "[Movetain NFT] " + parent_tweet_data.AuthorName + "(@" + parent_tweet_data.AuthorUserName +
+			")「" + parent_tweet_data.TweetText + "」 - " + parent_tweet_data.CreatedAt
+
+		NFT_media_URL := parent_tweet_data.ImageURL
+
+		// NFT発行
+		nftAddress, err := mintNFT(NFT_content, NFT_media_URL)
 		if err != nil {
 			continue
 		}
 
 		// 返信
 		reply_content := "🎉 Success!" +
-			"\nI created a Memo Transaction on Solana (devnet)." +
-			"\nYou can see your memo on Solana Explorer:" +
-			"\n https://explorer.solana.com/tx/" + txhash + "?cluster=devnet"
+			"\nI created a NFT on Solana (devnet)." +
+			"\nYou can see your NFT on Solana Explorer:" +
+			"\n https://explorer.solana.com/address/" + nftAddress + "?cluster=devnet"
 
 		reply_id, err := reply2Tweet(tweet_id, reply_content)
 		if err != nil {
@@ -68,6 +78,7 @@ func botMain(latest_replied_id string) (updated_latest_replied_id string) {
 		log.Println("[Twitter] BOT replied:", reply_id)
 	}
 
-	// 現在のNewest IDを返す
-	return mention_timeline_data.NewestID
+	// Newest IDを更新し返却
+	updated_latest_replied_id = mention_timeline_data.NewestID
+	return
 }
