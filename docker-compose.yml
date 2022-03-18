@@ -4,6 +4,8 @@ services:
     build: .
     volumes:
       - ./secrets:/movetain/secrets
+    depends_on:
+      - ipfs
   ipfs:
     image: ipfs/go-ipfs:latest
     ports:
