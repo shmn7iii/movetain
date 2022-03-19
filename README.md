@@ -63,7 +63,7 @@ sftp> exit
     "clientIdSecret": "<Client ID Secret>",
     "botUserId": "<BOT's User ID>",
     "feePayerBase58": "<Base58 of FeePayer's KeyPair>",
-    "hostIp: "<Host IP or domain>"
+    "hostIp": "<Host IP or domain>"
   }
   ```
 
