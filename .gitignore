@@ -7,6 +7,6 @@
 *.out
 
 .DS_Store
-.env
+main
 bin/*
 secrets/*
