@@ -1,18 +1,17 @@
 # Movetain
 
 > **JBA Blockchain Hackathon 2022 Spring**  
-> 第 2 期 Solana  
-> 作品名「[Movetain](https://twitter.com/movetain)」  
-> チーム「明太子のシャチホコ」 (
-> [shmn7iii](https://github.com/shmn7iii),
-> [motoha0827](https://github.com/motoha0827),
-> [WATANA-be](https://github.com/WATANA-be)
-> )
+> 第2期 Solana  
+> 
+> チーム「明太子のシャチホコ」 (Twitter: [@shmn7iii](https://twitter.com/shmn7iii), [@moth2525](https://twitter.com/@moth2525), [@helloyumakun](https://twitter.com/@helloyumakun))   
+> 作品名「NFT発行TwitterBOT『Movetain』」
 
 # About
 
 Movetain ([@movetain](https://twitter.com/movetain)) is a Twitter BOT which mints a
-**"Tweet NFT"** on Solana devnet.
+**"Tweet NFT"** on Solana devnet. If you reply to a tweet with mentioning BOT, BOT will mint the NFT.
+
+> ＊This BOT is a hackathon product. There is no guarantee of operation and the NFT will be minted into the BOT's wallet.
 
 # Set up
 
@@ -63,7 +62,8 @@ sftp> exit
     "clientId": "<Client ID>",
     "clientIdSecret": "<Client ID Secret>",
     "botUserId": "<BOT's User ID>",
-    "feePayerBase58": "<Base58 of FeePayer's KeyPair>"
+    "feePayerBase58": "<Base58 of FeePayer's KeyPair>",
+    "hostIp: "<Host IP or domain>"
   }
   ```
 
